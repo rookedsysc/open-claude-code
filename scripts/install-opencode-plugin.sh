@@ -73,7 +73,7 @@ fi
 
 mkdir -p "$PLUGIN_DIR"
 
-LOADER_PATH="$PLUGIN_DIR/opencode-claude-compat.js"
+LOADER_PATH="$PLUGIN_DIR/open-claude-code.js"
 
 cat <<EOF > "$LOADER_PATH"
 import ClaudeCompatPlugin from "${DIST_ENTRY}"

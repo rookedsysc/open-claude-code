@@ -53,7 +53,7 @@ Claude 스타일 호환 기능을 OpenCode에 연결하기 위한 루트 OpenCod
 패키지를 publish한 뒤에는 아래처럼 설치할 수 있습니다.
 
 ```bash
-npm install opencode-claude-compat
+npm install @open-claude-code/opencode
 ```
 
 ### 소스에서 설치
@@ -95,7 +95,7 @@ OpenCode는 `~/.config/opencode/plugins/` 아래의 JavaScript/TypeScript plugin
 
 위 스크립트를 실행하면 아래 로더 파일이 자동으로 생성됩니다.
 
-`~/.config/opencode/plugins/claude-compat.js`
+`~/.config/opencode/plugins/open-claude-code.js`
 
 ```js
 import ClaudeCompatPlugin from "/absolute/path/to/feat-oh-my-opencode/dist/index.js"
@@ -104,6 +104,21 @@ export default ClaudeCompatPlugin
 ```
 
 패키지가 아직 배포되지 않았기 때문에, 지금 기준으로는 이 방식이 가장 현실적인 전역 설정 방법입니다.
+
+### 프로젝트 npm plugin 설정
+
+패키지를 publish하면, 예시처럼 프로젝트 루트의 `opencode.json`에 바로 추가해서 사용할 수 있습니다.
+
+`opencode.json`
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "plugin": ["@open-claude-code/opencode"]
+}
+```
+
+이렇게 설정하면 OpenCode 시작 시 패키지를 자동으로 내려받습니다.
 
 ### 전역 npm plugin 설정
 
@@ -114,7 +129,7 @@ export default ClaudeCompatPlugin
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
-  "plugin": ["opencode-claude-compat"]
+  "plugin": ["@open-claude-code/opencode"]
 }
 ```
 
@@ -124,7 +139,7 @@ export default ClaudeCompatPlugin
 
 위 스크립트에서 `--project` 옵션으로 자동 생성할 수 있습니다.
 
-`.opencode/plugins/claude-compat.js`
+`.opencode/plugins/open-claude-code.js`
 
 ```js
 import ClaudeCompatPlugin from "/absolute/path/to/feat-oh-my-opencode/dist/index.js"
@@ -137,7 +152,7 @@ export default ClaudeCompatPlugin
 재사용 가능한 runtime/loader API는 `compat` 서브패스로 노출됩니다.
 
 ```ts
-import { createClaudeCompatRuntime } from "opencode-claude-compat/compat"
+import { createClaudeCompatRuntime } from "@open-claude-code/opencode/compat"
 
 const runtime = await createClaudeCompatRuntime({
   directory: process.cwd(),
@@ -156,10 +171,43 @@ npm run typecheck
 npm test
 ```
 
+배포 전 검증은 아래 명령어로 한 번에 확인할 수 있습니다.
+
+```bash
+npm run release:check
+```
+
+## 배포
+
+### 수동 배포
+
+```bash
+npm publish --access public
+```
+
+### GitHub Actions 자동 배포
+
+이 저장소에는 `v0.1.0` 같은 태그를 push하면 npm에 배포하는 워크플로우가 포함됩니다.
+
+사용 전에 아래를 준비해야 합니다.
+
+- 저장소 Secret에 `NPM_TOKEN` 추가
+- 태그 버전과 `package.json` 버전 일치 확인
+- `npm run release:check`로 사전 검증
+
+예시:
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+이 패키지를 공개 배포할 계획이라면 첫 릴리스 전에 `UNLICENSED`를 실제 배포할 라이선스로 바꾸는 것을 권장합니다.
+
 ## 주요 API
 
 - plugin entry: `src/index.ts`의 `default export`
-- library entry: `opencode-claude-compat/compat`
+- library entry: `@open-claude-code/opencode/compat`
 - `loadClaudeCompatConfig()`
 - `discoverClaudePlugins()`
 - `loadAllPluginComponents()`

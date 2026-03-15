@@ -53,7 +53,7 @@ The current implementation focuses on the Claude compatibility layer that was ex
 Once published, install it with npm:
 
 ```bash
-npm install opencode-claude-compat
+npm install @open-claude-code/opencode
 ```
 
 ### From source
@@ -95,7 +95,7 @@ OpenCode loads JavaScript and TypeScript plugin files from `~/.config/opencode/p
 
 The script above creates this loader file for you:
 
-`~/.config/opencode/plugins/claude-compat.js`
+`~/.config/opencode/plugins/open-claude-code.js`
 
 ```js
 import ClaudeCompatPlugin from "/absolute/path/to/feat-oh-my-opencode/dist/index.js"
@@ -104,6 +104,21 @@ export default ClaudeCompatPlugin
 ```
 
 This is the most practical global setup until the package is published.
+
+### Project npm plugin setup
+
+Once the package is published, you can install it in the same format as official plugins by editing the project-level `opencode.json`:
+
+`opencode.json`
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "plugin": ["@open-claude-code/opencode"]
+}
+```
+
+OpenCode will download the package automatically when the project starts.
 
 ### Global npm plugin setup
 
@@ -114,7 +129,7 @@ After publishing, OpenCode can load the package directly from your global config
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
-  "plugin": ["opencode-claude-compat"]
+  "plugin": ["@open-claude-code/opencode"]
 }
 ```
 
@@ -124,7 +139,7 @@ You can also create a project-local loader file in `.opencode/plugins/`:
 
 The script above can create it automatically with `--project`.
 
-`.opencode/plugins/claude-compat.js`
+`.opencode/plugins/open-claude-code.js`
 
 ```js
 import ClaudeCompatPlugin from "/absolute/path/to/feat-oh-my-opencode/dist/index.js"
@@ -137,7 +152,7 @@ export default ClaudeCompatPlugin
 The reusable runtime and loader APIs are exposed from the `compat` subpath:
 
 ```ts
-import { createClaudeCompatRuntime } from "opencode-claude-compat/compat"
+import { createClaudeCompatRuntime } from "@open-claude-code/opencode/compat"
 
 const runtime = await createClaudeCompatRuntime({
   directory: process.cwd(),
@@ -156,10 +171,43 @@ npm run typecheck
 npm test
 ```
 
+For release verification before publishing:
+
+```bash
+npm run release:check
+```
+
+## Publish
+
+### Manual publish
+
+```bash
+npm publish --access public
+```
+
+### GitHub Actions auto publish
+
+This repository includes a tag-based workflow that publishes to npm when you push a tag like `v0.1.0`.
+
+Before using it:
+
+- add the repository secret `NPM_TOKEN`
+- make sure the tag version matches `package.json`
+- review the package with `npm run release:check`
+
+Example:
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+If you intend to publish this package publicly, replace `UNLICENSED` with the license you actually want to distribute under before the first release.
+
 ## Main API Surface
 
 - plugin entry: `default export` from `src/index.ts`
-- library entry: `opencode-claude-compat/compat`
+- library entry: `@open-claude-code/opencode/compat`
 - `loadClaudeCompatConfig()`
 - `discoverClaudePlugins()`
 - `loadAllPluginComponents()`

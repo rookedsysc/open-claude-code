@@ -53,7 +53,7 @@
 在包发布之后，可以直接这样安装：
 
 ```bash
-npm install opencode-claude-compat
+npm install @open-claude-code/opencode
 ```
 
 ### 从源码安装
@@ -95,7 +95,7 @@ OpenCode 会从 `~/.config/opencode/plugins/` 加载 JavaScript/TypeScript plugi
 
 执行上面的脚本后，会自动生成下面这个 loader 文件。
 
-`~/.config/opencode/plugins/claude-compat.js`
+`~/.config/opencode/plugins/open-claude-code.js`
 
 ```js
 import ClaudeCompatPlugin from "/absolute/path/to/feat-oh-my-opencode/dist/index.js"
@@ -104,6 +104,21 @@ export default ClaudeCompatPlugin
 ```
 
 在当前还未发布 npm 包的情况下，这是最现实的全局使用方式。
+
+### 项目级 npm plugin 配置
+
+包发布后，也可以像官方插件一样，直接在项目根目录的 `opencode.json` 里声明：
+
+`opencode.json`
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "plugin": ["@open-claude-code/opencode"]
+}
+```
+
+这样 OpenCode 在项目启动时会自动下载这个包。
 
 ### 全局 npm plugin 设置
 
@@ -114,7 +129,7 @@ export default ClaudeCompatPlugin
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
-  "plugin": ["opencode-claude-compat"]
+  "plugin": ["@open-claude-code/opencode"]
 }
 ```
 
@@ -124,7 +139,7 @@ export default ClaudeCompatPlugin
 
 上面的脚本也可以通过 `--project` 自动生成它。
 
-`.opencode/plugins/claude-compat.js`
+`.opencode/plugins/open-claude-code.js`
 
 ```js
 import ClaudeCompatPlugin from "/absolute/path/to/feat-oh-my-opencode/dist/index.js"
@@ -137,7 +152,7 @@ export default ClaudeCompatPlugin
 可复用的 runtime 和 loader API 通过 `compat` 子路径暴露。
 
 ```ts
-import { createClaudeCompatRuntime } from "opencode-claude-compat/compat"
+import { createClaudeCompatRuntime } from "@open-claude-code/opencode/compat"
 
 const runtime = await createClaudeCompatRuntime({
   directory: process.cwd(),
@@ -156,10 +171,43 @@ npm run typecheck
 npm test
 ```
 
+发布前也可以用下面的命令一次性完成校验：
+
+```bash
+npm run release:check
+```
+
+## 发布
+
+### 手动发布
+
+```bash
+npm publish --access public
+```
+
+### GitHub Actions 自动发布
+
+这个仓库包含一个基于 tag 的工作流；当你推送 `v0.1.0` 这样的 tag 时，它会自动发布到 npm。
+
+使用前请先准备：
+
+- 在仓库 Secret 中添加 `NPM_TOKEN`
+- 确认 tag 版本与 `package.json` 版本一致
+- 先执行 `npm run release:check` 做发布前校验
+
+示例：
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+如果你打算公开发布这个包，建议在首次发布前把 `UNLICENSED` 改成你真正想使用的许可证。
+
 ## 主要 API
 
 - plugin 入口: `src/index.ts` 的 `default export`
-- library 入口: `opencode-claude-compat/compat`
+- library 入口: `@open-claude-code/opencode/compat`
 - `loadClaudeCompatConfig()`
 - `discoverClaudePlugins()`
 - `loadAllPluginComponents()`

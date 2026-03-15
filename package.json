@@ -1,5 +1,5 @@
 {
-  "name": "opencode-claude-compat",
+  "name": "@open-claude-code/opencode",
   "version": "0.1.0",
   "description": "OpenCode plugin package that adds Claude-style compatibility for plugins, commands, skills, agents, and MCP loading.",
   "type": "module",
@@ -63,10 +63,12 @@
     "build": "tsc -p tsconfig.json",
     "prepare": "npm run build",
     "prepublishOnly": "npm run build && npm run typecheck && npm test",
+    "release:check": "npm run build && npm run typecheck && npm test && npm pack --dry-run",
     "typecheck": "tsc --noEmit",
     "test": "node --import tsx --test src/**/*.test.ts"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }
