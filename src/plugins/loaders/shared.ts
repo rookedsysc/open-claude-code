@@ -3,8 +3,19 @@ import { readFileSync, realpathSync } from "node:fs"
 import type { MarkdownInstructionFrontmatter } from "../types"
 import { parseFrontmatter } from "../frontmatter"
 
-export function parseToolsConfig(tools: string | undefined): string[] | undefined {
+export function parseToolsConfig(tools: unknown): string[] | undefined {
   if (!tools) {
+    return undefined
+  }
+
+  if (Array.isArray(tools)) {
+    const parsed = tools
+      .map((value) => String(value).trim())
+      .filter(Boolean)
+    return parsed.length > 0 ? parsed : undefined
+  }
+
+  if (typeof tools !== "string") {
     return undefined
   }
 
